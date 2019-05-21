@@ -2,7 +2,7 @@
 
 ## Installation
 
-* Install MongoDb
+* Install MongoDB
 * Install Java 11
 * Build project
 
@@ -12,11 +12,14 @@
 
 ## Run
 
+* Start your local mongoDB on the default port 27017 with no username and password configured.
+* Start the application
+
 ```
 ./gradlew bootRun
 ```
 
-Alternatively, import into IntelliJ 2019 as a gradle project and run through a springboot run configuration
+* Alternatively, import into IntelliJ 2019 as a gradle project and run through a springboot run configuration
 
 ## Providing data
 Put the data which should be imported into src/main/resources/data. The expected filename is configured in the RawDataService as a constant for now.
