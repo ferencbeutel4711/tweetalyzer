@@ -2,6 +2,7 @@ package de.fbeutel.tweetalyzer.rawdata.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.fbeutel.tweetalyzer.common.util.PerformanceGauge;
 import de.fbeutel.tweetalyzer.rawdata.domain.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -14,6 +15,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -62,7 +64,7 @@ public class RawDataService {
     try {
       log.info("starting new mongo import");
       unzipArchiveAndProcess();
-      log.info("mongo import done");
+      log.info("mongo import started");
     } finally {
       importRunning.set(false);
     }
@@ -70,18 +72,27 @@ public class RawDataService {
 
   private void unzipArchiveAndProcess() {
     try (final ZipArchiveInputStream zip = new ZipArchiveInputStream(new FileInputStream(zipArchive))) {
+      final Map<String, byte[]> zippedFiles = new ConcurrentHashMap<>();
+
       ZipArchiveEntry entry = zip.getNextZipEntry();
       while (entry != null) {
-        gunzipArchiveAndPersist(IOUtils.toByteArray(zip), entry.getName());
+        zippedFiles.put(entry.getName(), IOUtils.toByteArray(zip));
         entry = zip.getNextZipEntry();
       }
+
+      final PerformanceGauge performanceGauge = new PerformanceGauge("RawDataService", zippedFiles.size(), 10.0);
+
+      performanceGauge.start();
+
+      zippedFiles.forEach((entryName, input) -> gunzipArchiveAndPersist(entryName, input, performanceGauge));
+
     } catch (final IOException exception) {
       log.error("error while unzipping base file", exception);
       throw new RuntimeException(exception);
     }
   }
 
-  private void gunzipArchiveAndPersist(final byte[] content, final String entryName) {
+  private void gunzipArchiveAndPersist(final String entryName, final byte[] content, final PerformanceGauge performanceGauge) {
     dataImportExecutionService.submit(() -> {
       try {
         final InputStream rawJson = new GZIPInputStream(new ByteArrayInputStream(content));
@@ -121,6 +132,8 @@ public class RawDataService {
       } catch (final IOException exception) {
         log.error("error during gzip entry processing. entry: " + entryName, exception);
       }
+
+      performanceGauge.reportCompletion(1);
     });
   }
 }
