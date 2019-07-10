@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Builder;
 import lombok.Value;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
@@ -19,6 +20,7 @@ public class RawRetweet {
   private final String id;
   private final String type;
 
+  @Indexed
   @JsonProperty("user")
   private final String userId;
   private final List<String> hashtags;
@@ -33,6 +35,7 @@ public class RawRetweet {
   @JsonProperty("mentioned_ids")
   private final List<String> mentionedIds;
 
+  @Indexed
   @JsonProperty("refers_to")
   private final String reference;
 }

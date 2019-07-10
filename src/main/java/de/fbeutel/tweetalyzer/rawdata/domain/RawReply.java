@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Value
 @Document
@@ -31,7 +32,7 @@ public class RawReply {
 
   private final List<String> mentions;
   @JsonProperty("mentioned_ids")
-  private final List<String> mentionedIds;
+  private final Set<String> mentionedIds;
 
   @JsonProperty("refers_to")
   private final String reference;

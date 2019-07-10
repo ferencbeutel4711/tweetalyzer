@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PerformanceGauge {
 
   private final String context;
-  private final int amountOfWork;
+  private final long amountOfWork;
   private final double thresholdPercentage;
 
   private int completionCount = 0;
@@ -14,7 +14,7 @@ public class PerformanceGauge {
 
   private long startTimeStamp;
 
-  public PerformanceGauge(final String context, final int amountOfWork, final double thresholdPercentage) {
+  public PerformanceGauge(final String context, final long amountOfWork, final double thresholdPercentage) {
     this.context = context;
     this.amountOfWork = amountOfWork;
     this.thresholdPercentage = thresholdPercentage;
@@ -34,7 +34,7 @@ public class PerformanceGauge {
       if (this.amountOfWork <= this.completionCount) {
         logCompletion();
         if (this.completionCount > this.amountOfWork) {
-          log.warn("performance Gauge " + this.context + " saw more completions than amount of work!..");
+          log.error("performance Gauge " + this.context + " saw more completions than amount of work!..");
         }
       }
     }
