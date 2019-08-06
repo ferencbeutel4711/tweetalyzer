@@ -30,3 +30,5 @@ HELP.md
 .vscode/
 
 src/main/resources/data
+src/main/resources/static/js
+node_modules/

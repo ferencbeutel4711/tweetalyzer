@@ -1,0 +1,24 @@
+{
+  "name": "tweetalyzer",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "webpack --mode production",
+    "watch": "LOCAL_DEV=true webpack --mode development --watch"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "babel-loader": "^8.0.5",
+    "copy-webpack-plugin": "^5.0.3",
+    "css-loader": "^3.2.0",
+    "style-loader": "^0.23.1",
+    "vue-loader": "^15.7.1",
+    "vue-template-compiler": "^2.6.10",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0"
+  },
+  "dependencies": {
+    "vue": "^2.6.10",
+    "@babel/polyfill": "~7.4.4"
+  }
+}
