@@ -8,7 +8,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
-@RequestMapping("/index")
+@RequestMapping("/")
 public class IndexHtmlController {
 
   @GetMapping
