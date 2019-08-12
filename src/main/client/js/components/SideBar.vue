@@ -24,11 +24,11 @@
 <script>
 export default {
     mounted: function () {
-        this.$store.commit('changeActiveModule', 'Home')
+        this.$store.commit('sideBar/changeActiveModule', 'Home')
     },
     methods: {
         isButtonActive(button) {
-            return this.$store.getters.activeModule === button;
+            return this.$store.getters['sideBar/activeModule'] === button;
         }
     }
 }

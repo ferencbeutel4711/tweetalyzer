@@ -2,6 +2,7 @@
     <div class="app">
         <SideBar/>
         <div class="content-wrapper">
+            <NotificationCenter/>
             <div class="content">
                 <Header/>
                 <router-view/>
@@ -13,9 +14,11 @@
 <script>
 import Header from './components/Header';
 import SideBar from "./components/SideBar";
+import NotificationCenter from "./components/NotificationCenter";
 
 export default {
     components: {
+        NotificationCenter,
         SideBar,
         Header
     }

@@ -11,4 +11,4 @@ const routes = [
     {path: '/settings', component: Settings}
 ];
 
-export default new VueRouter({mode: 'history', routes});
+export default new VueRouter({routes});

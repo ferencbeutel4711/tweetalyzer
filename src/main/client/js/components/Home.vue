@@ -47,7 +47,7 @@
 <script>
 export default {
     mounted: function () {
-        this.$store.commit('changeActiveModule', 'Home')
+        this.$store.commit('sideBar/changeActiveModule', 'Home')
     }
 }
 </script>

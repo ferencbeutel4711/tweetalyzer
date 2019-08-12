@@ -1,6 +1,7 @@
 <template>
     <div class="header">
         <h1>Tweetalyzer - {{activeModule}}</h1>
+
     </div>
 </template>
 
@@ -8,7 +9,7 @@
 export default {
     computed: {
         activeModule: function () {
-            return this.$store.getters.activeModule
+            return this.$store.getters['sideBar/activeModule']
         }
     }
 }
