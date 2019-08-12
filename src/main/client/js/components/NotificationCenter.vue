@@ -5,7 +5,7 @@
                  v-on:click="deleteNotification(notification.id)"
                  :class="statusToCssClass(notification.status)">
                 <span class="notification__message">
-                    {{notification.message}}
+                    ({{notification.count}}) {{notification.message}}
                 </span>
                 <div class="notification__close-button">
                     <i class="material-icons">close</i>
@@ -23,7 +23,7 @@ export default {
         }
     },
     methods: {
-        statusToCssClass: function(state) {
+        statusToCssClass: function (state) {
             switch (state) {
                 case 'OK':
                     return 'green';
@@ -35,7 +35,7 @@ export default {
                     return 'blue';
             }
         },
-        deleteNotification: function(notificationId) {
+        deleteNotification: function (notificationId) {
             this.$store.commit('notificationCenter/deleteNotification', notificationId);
         }
     }
@@ -44,6 +44,7 @@ export default {
 
 <style lang="scss" scoped="true">
     $notification-padding: 8px;
+    $border-size: 1px;
 
     .notification-center {
     }
@@ -65,9 +66,11 @@ export default {
     }
 
     .notification {
+        border: $border-size solid black;
+        margin-bottom: 2px;
         padding: $notification-padding;
         transition: all 0.66s;
-        width: calc(100% - #{$notification-padding} * 2);
+        width: calc(100% - (#{$notification-padding} + #{$border-size}) * 2);
 
         &__message {
             vertical-align: text-top;

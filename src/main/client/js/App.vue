@@ -21,6 +21,9 @@ export default {
         NotificationCenter,
         SideBar,
         Header
+    },
+    mounted: function () {
+
     }
 }
 </script>

@@ -1,10 +1,15 @@
 package de.fbeutel.tweetalyzer.admin.web;
 
+import de.fbeutel.tweetalyzer.admin.model.GraphStatusResponse;
+import de.fbeutel.tweetalyzer.admin.model.RawDataStatusResponse;
 import de.fbeutel.tweetalyzer.common.domain.ImportRunningException;
 import de.fbeutel.tweetalyzer.graph.service.GraphImportService;
+import de.fbeutel.tweetalyzer.graph.service.GraphService;
 import de.fbeutel.tweetalyzer.rawdata.service.RawDataImportService;
+import de.fbeutel.tweetalyzer.rawdata.service.RawDataService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,14 +18,42 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
 
   private final RawDataImportService rawDataImportService;
+  private final RawDataService rawDataService;
   private final GraphImportService graphImportService;
+  private final GraphService graphService;
 
-  public AdminController(RawDataImportService rawDataImportService, GraphImportService graphImportService) {
+  public AdminController(RawDataImportService rawDataImportService, RawDataService rawDataService,
+                         GraphImportService graphImportService, GraphService graphService) {
     this.rawDataImportService = rawDataImportService;
+    this.rawDataService = rawDataService;
     this.graphImportService = graphImportService;
+    this.graphService = graphService;
   }
 
-  @GetMapping("/import/rawData/start")
+  @GetMapping("/status/rawData")
+  public ResponseEntity<RawDataStatusResponse> getRawDataStatus() {
+    return ResponseEntity.ok(RawDataStatusResponse.builder()
+            .quoteCount(rawDataService.getQuotesSize())
+            .replyCount(rawDataService.getReplySize())
+            .retweetCount(rawDataService.getRetweetSize())
+            .statusCount(rawDataService.getStatusSize())
+            .userCount(rawDataService.getUsersSize())
+            .build());
+  }
+
+  @GetMapping("/status/graph")
+  public ResponseEntity<GraphStatusResponse> getGraphStatus() {
+    return ResponseEntity.ok(GraphStatusResponse.builder()
+            .userNodeCount(graphService.countUserNodes())
+            .tweetNodeCount(graphService.countTweetNodes())
+            .repliesToRelCount(graphService.countRepliesToRels())
+            .mentionsRelCount(graphService.countMentionsRels())
+            .tweetsRelCount(graphService.countTweetsRels())
+            .retweetsRelCount(graphService.countReTweetsRels())
+            .build());
+  }
+
+  @PostMapping("/import/rawData/start")
   public ResponseEntity<String> startRawDataImport() {
     try {
       rawDataImportService.startMongoImport();
@@ -31,7 +64,7 @@ public class AdminController {
     return ResponseEntity.ok("Raw Data import started.");
   }
 
-  @GetMapping("/import/graph/user/start")
+  @PostMapping("/import/graph/user/start")
   public ResponseEntity<String> startGraphUserImport() {
     try {
       graphImportService.startUserImport();
@@ -42,7 +75,7 @@ public class AdminController {
     return ResponseEntity.ok("User graph import started.");
   }
 
-  @GetMapping("/import/graph/tweet/start")
+  @PostMapping("/import/graph/tweet/start")
   public ResponseEntity<String> startGraphTweetImport() {
     try {
       graphImportService.startTweetImport();
@@ -53,7 +86,7 @@ public class AdminController {
     return ResponseEntity.ok("Tweet graph import started.");
   }
 
-  @GetMapping("/import/graph/reTweet/start")
+  @PostMapping("/import/graph/reTweet/start")
   public ResponseEntity<String> startGraphReTweetImport() {
     try {
       graphImportService.startReTweetImport();
@@ -64,7 +97,7 @@ public class AdminController {
     return ResponseEntity.ok("ReTweet graph import started.");
   }
 
-  @GetMapping("/import/graph/reply/start")
+  @PostMapping("/import/graph/reply/start")
   public ResponseEntity<String> startGraphReplyImport() {
     try {
       graphImportService.startReplyImport();

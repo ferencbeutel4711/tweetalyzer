@@ -87,4 +87,8 @@ public class RawDataService {
   public Long getReplySize() {
     return rawReplyRepository.count();
   }
+
+  public Long getQuotesSize() {
+    return rawQuoteRepository.count();
+  }
 }

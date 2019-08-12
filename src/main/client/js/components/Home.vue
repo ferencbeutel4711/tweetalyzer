@@ -2,7 +2,7 @@
     <div class="home">
         <p>Welcome to the Tweetalyzer! Using this tool, you can analyze a number of features in a given Twitter Data
             Set.</p>
-        <p>At the moment, this application is only usable locally utilising a started webserver. Please provide your
+        <p>At the moment, this application is only usable locally utilising a running webserver. Please provide your
             dataset by inserting it directly into the webserver like described in the README.md file.</p>
         <h2>Features</h2>
         <div class="features">

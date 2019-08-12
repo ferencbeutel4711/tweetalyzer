@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import uuidv1 from 'uuid/v1'
 
 Vue.use(Vuex);
 
@@ -10,26 +9,31 @@ const notificationCenterModule = {
         notifications: {}
     },
     mutations: {
-        addNotification(state, notification) {
-            Vue.set(state.notifications, notification.id, notification);
+        addNotification(state, {id, status, message}) {
+            const existingNotification = state.notifications[id];
+            if (existingNotification) {
+                state.notifications[id] = {
+                    id,
+                    status,
+                    message,
+                    count: existingNotification.count + 1
+                }
+            } else {
+                Vue.set(state.notifications, id, {
+                    id,
+                    status,
+                    message,
+                    count: 1
+                });
+            }
         },
         deleteNotification(state, id) {
             Vue.delete(state.notifications, id);
         }
     },
     getters: {
-        isActive: state => Object.keys(state.notifications).length > 0,
         notification: state => notificationId => state.notifications[notificationId],
         notifications: state => state.notifications
-    },
-    actions: {
-        publishNotification(context, {status, message}) {
-            context.commit('addNotification', {
-                id: uuidv1(),
-                status,
-                message
-            });
-        }
     }
 };
 
