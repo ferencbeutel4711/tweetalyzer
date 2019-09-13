@@ -43,11 +43,13 @@ export default {
     }
 
     .content-wrapper {
-        display: inline-block;
+        background-color: rgb(240, 240, 240);
+        box-shadow: 0 0 6px rgb(180, 180, 180);
         font-size: 16px;
-        height: 100%;
-        margin-left: $sidebar-width;
+        min-height: 100%;
+        margin: 0 auto;
+        max-width: 1000px;
         vertical-align: top;
-        width: calc(100% - #{$sidebar-width});
+        width: calc(100% - #{$sidebar-width} * 2);
     }
 </style>

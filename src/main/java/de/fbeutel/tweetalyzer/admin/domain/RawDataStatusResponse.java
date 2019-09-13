@@ -1,4 +1,4 @@
-package de.fbeutel.tweetalyzer.admin.model;
+package de.fbeutel.tweetalyzer.admin.domain;
 
 import lombok.Builder;
 import lombok.Value;

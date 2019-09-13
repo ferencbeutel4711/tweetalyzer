@@ -2,7 +2,7 @@ package de.fbeutel.tweetalyzer.rawdata.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.fbeutel.tweetalyzer.common.domain.ImportRunningException;
+import de.fbeutel.tweetalyzer.job.exception.JobRunningException;
 import de.fbeutel.tweetalyzer.common.util.PerformanceGauge;
 import de.fbeutel.tweetalyzer.rawdata.domain.*;
 import lombok.extern.slf4j.Slf4j;
@@ -56,9 +56,9 @@ public class RawDataImportService {
     this.zipArchive = new ClassPathResource(ZIP_ARCHIVE_NAME).getFile();
   }
 
-  public void startMongoImport() throws ImportRunningException {
+  public void startMongoImport() throws JobRunningException {
     if (importRunning.get()) {
-      throw new ImportRunningException();
+      throw new JobRunningException();
     }
 
     importRunning.set(true);

@@ -1,0 +1,69 @@
+package de.fbeutel.tweetalyzer.graph.job;
+
+import de.fbeutel.tweetalyzer.job.domain.Job;
+import de.fbeutel.tweetalyzer.job.domain.JobName;
+import de.fbeutel.tweetalyzer.graph.domain.Tweet;
+import de.fbeutel.tweetalyzer.graph.service.TweetService;
+import de.fbeutel.tweetalyzer.graph.service.UserService;
+import de.fbeutel.tweetalyzer.rawdata.service.RawDataService;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+import static de.fbeutel.tweetalyzer.job.domain.JobName.*;
+import static de.fbeutel.tweetalyzer.job.domain.JobStatus.INITIAL;
+import static java.util.Arrays.asList;
+
+@Component
+public class ImportGraphTweetsJob extends Job {
+
+  private static final String JOB_DESCRIPTION = "This job is importing all Tweets(Status) from the raw data into the graph " +
+          "database";
+  private static final List<JobName> MUTEX_GROUP = asList(IMPORT_GRAPH_USERS_JOB, IMPORT_GRAPH_RETWEETS_JOB,
+          IMPORT_GRAPH_REPLIES_JOB);
+
+  private final RawDataService rawDataService;
+  private final UserService userService;
+  private final TweetService tweetService;
+
+  public ImportGraphTweetsJob(RawDataService rawDataService, UserService userService, TweetService tweetService) {
+    super(IMPORT_GRAPH_TWEETS_JOB, JOB_DESCRIPTION, MUTEX_GROUP, INITIAL, 0, rawDataService.getStatusSize(), 0);
+
+    this.rawDataService = rawDataService;
+    this.userService = userService;
+    this.tweetService = tweetService;
+  }
+
+  @Override
+  public void run() {
+    rawDataService.getAllStatus()
+            .map(Tweet::fromRawData)
+            .forEach(tweet -> {
+              try {
+                if (tweet.getRawId() == null || tweetService.findByRawId(tweet.getRawId()).isEmpty()) {
+                  tweet.getMentionedIds().forEach(userId -> userService.findByRawId(userId).ifPresent(tweet::addMentionedUser));
+
+                  tweetService.save(tweet);
+
+                  userService.findByRawId(tweet.getUserId()).ifPresent(authorOfThisTweet -> {
+                    authorOfThisTweet.addTweet(tweet);
+                    userService.save(authorOfThisTweet);
+                  });
+
+                  tweetService.findByReplyTargetId(tweet.getRawId()).ifPresent(reply -> {
+                    reply.setTarget(tweet);
+                    tweetService.save(reply);
+                  });
+
+                  rawDataService.getAllRetweetsByReference(tweet.getRawId())
+                          .forEach(reTweet -> userService.findByRawId(reTweet.getUserId()).ifPresent(user -> {
+                            user.addReTweet(tweet);
+                            userService.save(user);
+                          }));
+                }
+              } finally {
+                this.reportCompletion(1);
+              }
+            });
+  }
+}

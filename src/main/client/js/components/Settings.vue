@@ -15,7 +15,10 @@
                             :value="statusTile.value" :key="statusTile.key" :id="statusTile.id"/>
             </div>
         </div>
-        <div class="import-control">
+        <div class="job-control">
+            <JobInfo v-for="job in jobs" :jobName="job.jobName" :key="job.jobName"
+                     :readableJobName="job.readableJobName" :postEndpoint="job.postEndpoint"
+                     :description="job.description" :status="job.status" :completion="job.completion"/>
         </div>
     </div>
 </template>
@@ -23,9 +26,10 @@
 <script>
 import axios from 'axios';
 import StatusTile from "./StatusTile";
+import JobInfo from "./JobInfo";
 
 export default {
-    components: {StatusTile},
+    components: {StatusTile, JobInfo},
     data() {
         return {
             intervalId: null,
@@ -97,6 +101,40 @@ export default {
                     id: Date.now(),
                     description: 'This value shows the amount of retweets relationships in the graph database.',
                     value: `Graph Retweet Nodes: calculating`
+                }
+            ],
+            jobs: [
+                {
+                    jobName: 'IMPORT_GRAPH_USERS_JOB',
+                    postEndpoint: '/admin/import/graph/user/start',
+                    readableJobName: '',
+                    description: '',
+                    status: '',
+                    completion: 0
+                },
+                {
+                    jobName: 'IMPORT_GRAPH_TWEETS_JOB',
+                    postEndpoint: '/admin/import/graph/tweet/start',
+                    readableJobName: '',
+                    description: '',
+                    status: '',
+                    completion: 0
+                },
+                {
+                    jobName: 'IMPORT_GRAPH_RETWEETS_JOB',
+                    postEndpoint: '/admin/import/graph/reTweet/start',
+                    readableJobName: '',
+                    description: '',
+                    status: '',
+                    completion: 0
+                },
+                {
+                    jobName: 'IMPORT_GRAPH_REPLIES_JOB',
+                    postEndpoint: '/admin/import/graph/reply/start',
+                    readableJobName: '',
+                    description: '',
+                    status: '',
+                    completion: 0
                 }
             ]
         }
@@ -241,15 +279,16 @@ export default {
     @import "../../css/mixins";
 
     .status-tiles {
-        text-align: center;
     }
 
     .status-tile {
         border: 1px solid;
         display: inline-block;
         height: 100px;
+        margin: 4px;
+        padding: 4px;
         text-align: center;
-        width: 400px;
+        width: calc(100% / 3 - 18px);
         @include vertical-anchor();
 
         &__content {

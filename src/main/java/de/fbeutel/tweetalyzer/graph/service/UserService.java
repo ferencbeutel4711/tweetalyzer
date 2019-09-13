@@ -1,33 +1,24 @@
 package de.fbeutel.tweetalyzer.graph.service;
 
+import de.fbeutel.tweetalyzer.graph.domain.Tweet;
 import de.fbeutel.tweetalyzer.graph.domain.TweetGraphRepository;
+import de.fbeutel.tweetalyzer.graph.domain.User;
 import de.fbeutel.tweetalyzer.graph.domain.UserGraphRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
-public class GraphService {
-  private final TweetGraphRepository tweetGraphRepository;
+public class UserService {
   private final UserGraphRepository userGraphRepository;
 
-  public GraphService(TweetGraphRepository tweetGraphRepository, UserGraphRepository userGraphRepository) {
-    this.tweetGraphRepository = tweetGraphRepository;
+  public UserService(final UserGraphRepository userGraphRepository) {
     this.userGraphRepository = userGraphRepository;
   }
 
   public long countUserNodes() {
     return userGraphRepository.count();
-  }
-
-  public long countTweetNodes() {
-    return tweetGraphRepository.count();
-  }
-
-  public long countRepliesToRels() {
-    return tweetGraphRepository.countRepliesToRels();
-  }
-
-  public long countMentionsRels() {
-    return tweetGraphRepository.countMentionsRels();
   }
 
   public long countTweetsRels() {
@@ -36,5 +27,13 @@ public class GraphService {
 
   public long countReTweetsRels() {
     return userGraphRepository.countReTweetsRels();
+  }
+
+  public Optional<User> findByRawId(final String rawId) {
+    return userGraphRepository.findByRawId(rawId);
+  }
+
+  public User save(final User user) {
+    return userGraphRepository.save(user);
   }
 }
