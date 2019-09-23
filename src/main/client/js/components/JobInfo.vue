@@ -1,43 +1,30 @@
 <template>
-    <div class="job-info" v-if="enriched">
-        <span>{{readableJobName}}</span>
+    <div class="job-info">
+        <transition name="job-info__animation" mode="out-in">
+            <span :key="readableJobName" class="job-info__name">{{readableJobName}}</span>
+        </transition>
+        <transition name="job-info__animation" mode="out-in">
+            <span :key="description" class="job-info__description">{{description}}</span>
+        </transition>
+        <transition name="job-info__animation" mode="out-in">
+            <ProgressBar :key="completion" class="job-info__progress" :completion="completion"/>
+        </transition>
+        <transition name="job-info__animation" mode="out-in">
+            <span :key="status" class="job-info__status">{{status}}</span>
+        </transition>
     </div>
 </template>
 
 <script>
-import axios from 'axios';
+import ProgressBar from "./ProgressBar";
 
 export default {
+    components: {ProgressBar},
     props: {
-        jobName: String,
-        postEndpoint: String,
         readableJobName: String,
         description: String,
         status: String,
         completion: Number
-    },
-    data() {
-        return {
-            enriched: false
-        }
-    },
-    mounted() {
-        axios.get(`/admin/job/${this.jobName}`)
-            .then((response) => {
-                console.log(response);
-                this.enriched = true;
-            })
-            .catch((error) => {
-                if(error.response && error.response.status === 404) {
-
-                }
-                console.log(error);
-                this.$store.commit('notificationCenter/addNotification', {
-                    id: `settings_jobInfo--${this.jobName}`,
-                    status: 'ERROR',
-                    message: `There was an error accessing the job info endpoint for ${this.jobName}. Further information in the browser logs.`
-                })
-            })
     }
 }
 </script>
@@ -45,28 +32,34 @@ export default {
 <style lang="scss" scoped="true">
     @import "../../css/mixins";
 
-    .status-tile {
-        border: 1px solid;
-        display: inline-block;
-        height: 100px;
-        margin: 8px;
-        width: 400px;
+    .job-info {
+        text-align: left;
+        width: 100%;
+
         @include vertical-anchor();
 
-        &__content {
+        &__name {
             display: inline-block;
-            text-align: center;
             vertical-align: middle;
+            width: 23%;
         }
 
         &__description {
-            font-size: 12px;
-            line-height: 12px;
+            display: inline-block;
+            vertical-align: middle;
+            width: 28%;
         }
 
-        span {
-            margin: 0;
+        &__progress {
+            display: inline-block;
             vertical-align: middle;
+            width: 37%;
+        }
+
+        &__status {
+            display: inline-block;
+            vertical-align: middle;
+            width: 10%;
         }
 
         &__animation {

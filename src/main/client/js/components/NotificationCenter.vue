@@ -73,6 +73,8 @@ export default {
         width: calc(100% - (#{$notification-padding} + #{$border-size}) * 2);
 
         &__message {
+            display: inline-block;
+            max-width: 95%;
             vertical-align: text-top;
         }
 

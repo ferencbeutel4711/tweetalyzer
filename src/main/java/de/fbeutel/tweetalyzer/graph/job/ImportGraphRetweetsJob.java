@@ -13,6 +13,11 @@ import static de.fbeutel.tweetalyzer.job.domain.JobName.*;
 import static de.fbeutel.tweetalyzer.job.domain.JobStatus.INITIAL;
 import static java.util.Arrays.asList;
 
+/**
+ * Will update the reTweets relation:
+ * User->[reTweets]->Tweet
+ * This operation is idempotent
+ */
 @Component
 public class ImportGraphRetweetsJob extends Job {
 
@@ -25,7 +30,7 @@ public class ImportGraphRetweetsJob extends Job {
   private final TweetService tweetService;
 
   public ImportGraphRetweetsJob(RawDataService rawDataService, UserService userService, TweetService tweetService) {
-    super(IMPORT_GRAPH_RETWEETS_JOB, JOB_DESCRIPTION, MUTEX_GROUP, INITIAL, 0, rawDataService.getRetweetSize(), 0);
+    super(IMPORT_GRAPH_RETWEETS_JOB, JOB_DESCRIPTION, MUTEX_GROUP, rawDataService::getRetweetSize, INITIAL, 0, 0, 0);
 
     this.rawDataService = rawDataService;
     this.userService = userService;
@@ -33,7 +38,7 @@ public class ImportGraphRetweetsJob extends Job {
   }
 
   @Override
-  public void run() {
+  protected void execute() {
     rawDataService.getAllRetweets()
             .forEach(reTweet -> {
               try {

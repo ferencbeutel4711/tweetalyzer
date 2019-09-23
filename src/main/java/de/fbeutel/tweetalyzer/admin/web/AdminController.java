@@ -6,8 +6,6 @@ import de.fbeutel.tweetalyzer.common.exception.NotFoundException;
 import de.fbeutel.tweetalyzer.job.domain.Job;
 import de.fbeutel.tweetalyzer.job.domain.JobInformation;
 import de.fbeutel.tweetalyzer.job.domain.JobName;
-import de.fbeutel.tweetalyzer.job.exception.JobRunningException;
-import de.fbeutel.tweetalyzer.graph.service.GraphImportService;
 import de.fbeutel.tweetalyzer.graph.service.TweetService;
 import de.fbeutel.tweetalyzer.graph.service.UserService;
 import de.fbeutel.tweetalyzer.job.service.JobService;
@@ -20,19 +18,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin")
 public class AdminController {
 
-  private final RawDataImportService rawDataImportService;
   private final RawDataService rawDataService;
-  private final GraphImportService graphImportService;
   private final UserService userService;
   private final TweetService tweetService;
   private final JobService jobService;
 
-  public AdminController(RawDataImportService rawDataImportService, RawDataService rawDataService,
-                         GraphImportService graphImportService, UserService userService, TweetService tweetService,
+  public AdminController(RawDataService rawDataService, UserService userService, TweetService tweetService,
                          JobService jobService) {
-    this.rawDataImportService = rawDataImportService;
     this.rawDataService = rawDataService;
-    this.graphImportService = graphImportService;
     this.userService = userService;
     this.tweetService = tweetService;
     this.jobService = jobService;
@@ -66,34 +59,10 @@ public class AdminController {
     return ResponseEntity.ok(jobService.getJobInfo(jobName).orElseThrow(NotFoundException::new).toJobInformation());
   }
 
-  @PostMapping("/import/rawData/start")
-  public ResponseEntity<String> startRawDataImport() {
-    try {
-      rawDataImportService.startMongoImport();
-    } catch (JobRunningException e) {
-      return ResponseEntity.badRequest().body("Bad Request: Raw data import is already running!");
-    }
+  @PostMapping("/job/{name}/start")
+  public ResponseEntity<Void> startRawDataImport(@PathVariable("name") final JobName jobName) {
+    jobService.startJob(jobName);
 
-    return ResponseEntity.ok("Raw Data import started.");
-  }
-
-  @PostMapping("/import/graph/user/start")
-  public ResponseEntity<Job> startGraphUserImport() {
-    return ResponseEntity.ok(graphImportService.startUserImport());
-  }
-
-  @PostMapping("/import/graph/tweet/start")
-  public ResponseEntity<Job> startGraphTweetImport() {
-    return ResponseEntity.ok(graphImportService.startTweetImport());
-  }
-
-  @PostMapping("/import/graph/reTweet/start")
-  public ResponseEntity<Job> startGraphReTweetImport() {
-    return ResponseEntity.ok(graphImportService.startReTweetImport());
-  }
-
-  @PostMapping("/import/graph/reply/start")
-  public ResponseEntity<Job> startGraphReplyImport() {
-    return ResponseEntity.ok(graphImportService.startReplyImport());
+    return ResponseEntity.ok().build();
   }
 }

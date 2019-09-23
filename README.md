@@ -40,3 +40,17 @@ Please be aware that the import is running in parallel using up to 10 threads an
 
 ## Accessing the frontend
 The frontend is accessible under localhost:8080/. From there you can access all application features, including starting data imports/ transformations.
+
+## Nodes & Relationships
+
+```
+---------                ---------            --------
+| Tweet | - replies_to - | Tweet | - tweets - | User |
+---------                ---------            --------
+    \                        |
+     \                    mentions
+      \                      |
+       \                 --------
+        --- reTweets --- | User |
+                         --------
+```

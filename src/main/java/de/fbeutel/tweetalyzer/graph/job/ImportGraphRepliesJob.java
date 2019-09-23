@@ -14,6 +14,14 @@ import static de.fbeutel.tweetalyzer.job.domain.JobName.*;
 import static de.fbeutel.tweetalyzer.job.domain.JobStatus.INITIAL;
 import static java.util.Arrays.asList;
 
+/**
+ * Will import all Replies as Tweet nodes.
+ * Will update the tweets relation:
+ * User->[tweets]->Tweet
+ * Will update the replies_to relation:
+ * Tweet->[replies_to]->Tweet
+ * This operation is NOT idempotent as it only processes not yet imported rawReplies
+ */
 @Component
 public class ImportGraphRepliesJob extends Job {
 
@@ -26,7 +34,7 @@ public class ImportGraphRepliesJob extends Job {
   private final TweetService tweetService;
 
   public ImportGraphRepliesJob(RawDataService rawDataService, UserService userService, TweetService tweetService) {
-    super(IMPORT_GRAPH_REPLIES_JOB, JOB_DESCRIPTION, MUTEX_GROUP, INITIAL, 0, rawDataService.getReplySize(), 0);
+    super(IMPORT_GRAPH_REPLIES_JOB, JOB_DESCRIPTION, MUTEX_GROUP, rawDataService::getReplySize, INITIAL, 0, 0, 0);
 
     this.rawDataService = rawDataService;
     this.userService = userService;
@@ -34,7 +42,7 @@ public class ImportGraphRepliesJob extends Job {
   }
 
   @Override
-  public void run() {
+  protected void execute() {
     rawDataService.getAllReplies()
             .map(Tweet::fromRawData)
             .forEach(tweet -> {
