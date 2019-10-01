@@ -1,7 +1,6 @@
 <template>
     <div class="header">
         <h1>Tweetalyzer - {{activeModule}}</h1>
-
     </div>
 </template>
 

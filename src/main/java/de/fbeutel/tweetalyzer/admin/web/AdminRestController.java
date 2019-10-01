@@ -16,15 +16,15 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin")
-public class AdminController {
+public class AdminRestController {
 
   private final RawDataService rawDataService;
   private final UserService userService;
   private final TweetService tweetService;
   private final JobService jobService;
 
-  public AdminController(RawDataService rawDataService, UserService userService, TweetService tweetService,
-                         JobService jobService) {
+  public AdminRestController(RawDataService rawDataService, UserService userService, TweetService tweetService,
+                             JobService jobService) {
     this.rawDataService = rawDataService;
     this.userService = userService;
     this.tweetService = tweetService;

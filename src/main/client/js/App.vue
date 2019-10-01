@@ -53,3 +53,4 @@ export default {
         width: calc(100% - #{$sidebar-width} * 2);
     }
 </style>
+
