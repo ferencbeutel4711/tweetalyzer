@@ -1,5 +1,6 @@
 package de.fbeutel.tweetalyzer.graph.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import de.fbeutel.tweetalyzer.rawdata.domain.RawUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import org.neo4j.ogm.annotation.*;
 import java.util.HashSet;
 import java.util.Set;
 
+import static de.fbeutel.tweetalyzer.graph.domain.NodeType.USER;
 import static org.neo4j.ogm.annotation.Relationship.UNDIRECTED;
 
 @Data
@@ -27,9 +29,11 @@ public class User {
   private String rawId;
   private String name;
 
+  @JsonManagedReference
   @Relationship(type = "tweets", direction = UNDIRECTED)
   private Set<Tweet> createdTweets;
 
+  @JsonManagedReference
   @Relationship(type = "reTweets", direction = UNDIRECTED)
   private Set<Tweet> reTweets;
 
@@ -39,6 +43,14 @@ public class User {
             .name(rawUser.getScreenName())
             .createdTweets(new HashSet<>())
             .reTweets(new HashSet<>())
+            .build();
+  }
+
+  public PublicUser toPublicUser() {
+    return PublicUser.builder()
+            .type(USER)
+            .id(this.id.toString())
+            .name(this.name)
             .build();
   }
 

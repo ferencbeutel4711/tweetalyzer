@@ -1,5 +1,6 @@
 package de.fbeutel.tweetalyzer.graph.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import de.fbeutel.tweetalyzer.rawdata.domain.RawReply;
 import de.fbeutel.tweetalyzer.rawdata.domain.RawStatus;
 import lombok.*;
@@ -8,6 +9,7 @@ import org.neo4j.ogm.annotation.*;
 import java.util.HashSet;
 import java.util.Set;
 
+import static de.fbeutel.tweetalyzer.graph.domain.NodeType.TWEET;
 import static org.neo4j.ogm.annotation.Relationship.UNDIRECTED;
 
 @Data
@@ -32,8 +34,10 @@ public class Tweet {
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
   @Relationship(type = "replies_to", direction = UNDIRECTED)
+  @JsonBackReference
   private Tweet target;
 
+  @JsonBackReference
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
   @Relationship(type = "mentions", direction = UNDIRECTED)
@@ -57,6 +61,14 @@ public class Tweet {
             .mentionedIds(rawReply.getMentionedIds())
             .mentionedUsers(new HashSet<>())
             .replyTargetId(rawReply.getReference())
+            .build();
+  }
+
+  public PublicTweet toPublicTweet() {
+    return PublicTweet.builder()
+            .type(TWEET)
+            .id(this.id.toString())
+            .text(this.text)
             .build();
   }
 

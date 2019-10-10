@@ -17,6 +17,10 @@ public class UserService {
     this.userGraphRepository = userGraphRepository;
   }
 
+  public List<User> findForGraph(final int limit) {
+    return userGraphRepository.findForGraph(limit);
+  }
+
   public long countUserNodes() {
     return userGraphRepository.count();
   }
