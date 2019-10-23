@@ -1,16 +1,13 @@
 package de.fbeutel.tweetalyzer.graph.web;
 
-import de.fbeutel.tweetalyzer.graph.domain.PublicNetwork;
-import de.fbeutel.tweetalyzer.graph.domain.User;
-import de.fbeutel.tweetalyzer.graph.service.GraphService;
-import de.fbeutel.tweetalyzer.graph.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import de.fbeutel.tweetalyzer.graph.domain.PublicNetwork;
+import de.fbeutel.tweetalyzer.graph.service.GraphService;
 
 @RestController
 @RequestMapping("/graph/user")
@@ -23,7 +20,9 @@ public class GraphRestController {
   }
 
   @GetMapping
-  public ResponseEntity<PublicNetwork> findForGraph(@RequestParam(value = "limit", defaultValue = "100") final int limit) {
-    return ResponseEntity.ok(graphService.calculateNetwork(limit));
+  public ResponseEntity<PublicNetwork> findForGraph(@RequestParam(value = "limit", defaultValue = "100") final int limit,
+                                                    @RequestParam(value = "hashtag", required = false) final String hashtag,
+                                                    @RequestParam(value = "username", required = false) final String username) {
+    return ResponseEntity.ok(graphService.calculateNetwork(limit, hashtag, username));
   }
 }

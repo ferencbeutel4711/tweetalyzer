@@ -1,12 +1,27 @@
 package de.fbeutel.tweetalyzer.graph.service;
 
-import de.fbeutel.tweetalyzer.graph.domain.*;
+import static java.util.Collections.singletonList;
+
+import static de.fbeutel.tweetalyzer.graph.domain.RelationshipType.MENTIONS;
+import static de.fbeutel.tweetalyzer.graph.domain.RelationshipType.REPLIES_TO;
+import static de.fbeutel.tweetalyzer.graph.domain.RelationshipType.RETWEETS;
+import static de.fbeutel.tweetalyzer.graph.domain.RelationshipType.TWEETS;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-
-import static de.fbeutel.tweetalyzer.graph.domain.RelationshipType.*;
-import static java.util.Collections.singletonList;
+import de.fbeutel.tweetalyzer.graph.domain.PublicNetwork;
+import de.fbeutel.tweetalyzer.graph.domain.PublicNodes;
+import de.fbeutel.tweetalyzer.graph.domain.PublicRelationship;
+import de.fbeutel.tweetalyzer.graph.domain.PublicRelationships;
+import de.fbeutel.tweetalyzer.graph.domain.PublicTweet;
+import de.fbeutel.tweetalyzer.graph.domain.PublicUser;
+import de.fbeutel.tweetalyzer.graph.domain.Tweet;
+import de.fbeutel.tweetalyzer.graph.domain.User;
 
 @Service
 public class GraphService {
@@ -19,8 +34,8 @@ public class GraphService {
     this.userService = userService;
   }
 
-  public PublicNetwork calculateNetwork(final int limit) {
-    final List<User> users = userService.findForGraph(limit);
+  public PublicNetwork calculateNetwork(final int limit, final String hashtag, final String username) {
+    final List<User> users = userService.findForGraph(limit, hashtag, username);
 
     return PublicNetwork.builder()
             .nodes(nodesForUsers(users, 0))
