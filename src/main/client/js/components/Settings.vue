@@ -1,7 +1,7 @@
 <template>
     <div class="settings">
-        <p>Here you can configure the application to your desire. Please note that the settings are stored in the local
-            storage of your browser, so once that is cleared, the settings will revert back to the default.</p>
+        <p>Here you can configure the application to your desire.</p>
+        <button @click="toggleDebug">{{toggleDebugButtonLabel}}</button>
         <div class="status-monitor">
             <h2>Application Status</h2>
             <h3>RawData</h3>
@@ -28,6 +28,11 @@ import JobControlCenter from "./JobControlCenter";
 
 export default {
     components: {JobControlCenter, StatusTile, JobInfo},
+    computed: {
+        toggleDebugButtonLabel() {
+            return this.$store.getters['settings/isDebugEnabled'] ? 'disable debug' : 'enable debug';
+        }
+    },
     data() {
         return {
             intervalId: null,
@@ -234,6 +239,9 @@ export default {
         fetchStatusEndpoints() {
             this.fetchRawDataStatus();
             this.fetchGraphStatus();
+        },
+        toggleDebug() {
+            this.$store.commit('settings/toggleDebug');
         }
     }
 }

@@ -11,6 +11,10 @@ if (inLocalDevMode) {
         {
             from: path.resolve(__dirname, './src/main/resources/static/js/main.js'),
             to: path.resolve(__dirname, './build/resources/main/static/js/main.js')
+        },
+        {
+            from: path.resolve(__dirname, './src/main/resources/static/js/main.js'),
+            to: path.resolve(__dirname, './out/production/resources/static/js/main.js')
         }
     ]))
 }
