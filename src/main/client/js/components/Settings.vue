@@ -85,19 +85,19 @@ export default {
                     key: 'graphRepliesToRelCount',
                     id: Date.now(),
                     description: 'This value shows the amount of replies_to relationships in the graph database.',
-                    value: `Graph Tweet Nodes: calculating`
+                    value: `Graph Replies_to Rels: calculating`
                 },
                 {
                     key: 'graphMentionsRelCount',
                     id: Date.now(),
                     description: 'This value shows the amount of mentions relationships in the graph database.',
-                    value: `Graph Tweet Nodes: calculating`
+                    value: `Graph Mentions Rels: calculating`
                 },
                 {
                     key: 'graphTweetsRelCount',
                     id: Date.now(),
                     description: 'This value shows the amount of tweets relationships in the graph database.',
-                    value: `Graph Tweet Nodes: calculating`
+                    value: `Graph Tweets Rels: calculating`
                 },
                 {
                     key: 'graphRetweetsRelCount',
@@ -176,19 +176,19 @@ export default {
                             key: 'graphRepliesToRelCount',
                             id: Date.now(),
                             description: 'This value shows the amount of replies_to relationships in the graph database.',
-                            value: `Graph Tweet Nodes: ${data.repliesToRelCount}`
+                            value: `Graph Replies_to Rels: calculating`
                         },
                         {
                             key: 'graphMentionsRelCount',
                             id: Date.now(),
                             description: 'This value shows the amount of mentions relationships in the graph database.',
-                            value: `Graph Tweet Nodes: ${data.mentionsRelCount}`
+                            value: `Graph Mentions Rels: calculating`
                         },
                         {
                             key: 'graphTweetsRelCount',
                             id: Date.now(),
                             description: 'This value shows the amount of tweets relationships in the graph database.',
-                            value: `Graph Tweet Nodes: ${data.tweetsRelCount}`
+                            value: `Graph Tweets Rels: calculating`
                         },
                         {
                             key: 'graphRetweetsRelCount',

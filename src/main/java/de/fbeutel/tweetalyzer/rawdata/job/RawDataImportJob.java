@@ -2,7 +2,6 @@ package de.fbeutel.tweetalyzer.rawdata.job;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.fbeutel.tweetalyzer.common.util.PerformanceGauge;
 import de.fbeutel.tweetalyzer.job.domain.Job;
 import de.fbeutel.tweetalyzer.job.domain.JobName;
 import de.fbeutel.tweetalyzer.rawdata.domain.*;
