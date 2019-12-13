@@ -28,6 +28,26 @@ public class RawDataService {
 
   }
 
+  public RawQuote save(final RawQuote rawQuote) {
+    return rawQuoteRepository.save(rawQuote);
+  }
+
+  public RawReply save(final RawReply rawReply) {
+    return rawReplyRepository.save(rawReply);
+  }
+
+  public RawRetweet save(final RawRetweet rawRetweet) {
+    return rawRetweetRepository.save(rawRetweet);
+  }
+
+  public RawStatus save(final RawStatus rawStatus) {
+    return rawStatusRepository.save(rawStatus);
+  }
+
+  public RawUser save(final RawUser rawUser) {
+    return rawUserRepository.save(rawUser);
+  }
+
   public Stream<RawUser> getAllUsers() {
     return rawUserRepository.findAllAsStream();
   }

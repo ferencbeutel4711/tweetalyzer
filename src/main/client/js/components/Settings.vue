@@ -85,7 +85,7 @@ export default {
                     key: 'graphRepliesToRelCount',
                     id: Date.now(),
                     description: 'This value shows the amount of replies_to relationships in the graph database.',
-                    value: `Graph Replies_to Rels: calculating`
+                    value: `Graph Replies_To Rels: calculating`
                 },
                 {
                     key: 'graphMentionsRelCount',
@@ -176,19 +176,19 @@ export default {
                             key: 'graphRepliesToRelCount',
                             id: Date.now(),
                             description: 'This value shows the amount of replies_to relationships in the graph database.',
-                            value: `Graph Replies_to Rels: calculating`
+                            value: `Graph Replies_To Rels:  ${data.repliesToRelCount}`
                         },
                         {
                             key: 'graphMentionsRelCount',
                             id: Date.now(),
                             description: 'This value shows the amount of mentions relationships in the graph database.',
-                            value: `Graph Mentions Rels: calculating`
+                            value: `Graph Mentions Rels:  ${data.mentionsRelCount}`
                         },
                         {
                             key: 'graphTweetsRelCount',
                             id: Date.now(),
                             description: 'This value shows the amount of tweets relationships in the graph database.',
-                            value: `Graph Tweets Rels: calculating`
+                            value: `Graph Tweets Rels:  ${data.tweetsRelCount}`
                         },
                         {
                             key: 'graphRetweetsRelCount',
