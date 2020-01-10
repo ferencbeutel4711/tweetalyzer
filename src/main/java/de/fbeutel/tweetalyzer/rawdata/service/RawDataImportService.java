@@ -21,52 +21,55 @@ import java.util.zip.GZIPInputStream;
 @Service
 public class RawDataImportService {
 
-  private final File zipArchive;
-  private final ObjectMapper mapper;
+    private final File zipArchive;
+    private final ObjectMapper mapper;
 
-  public RawDataImportService(@Value("${zip-archive.path}") final String zipArchivePath, ObjectMapper mapper) {
-    this.mapper = mapper;
+    public RawDataImportService(@Value("${zip-archive.path}") final String zipArchivePath, ObjectMapper mapper) {
+        this.mapper = mapper;
 
-    try {
-      this.zipArchive = new ClassPathResource(zipArchivePath).getFile();
-    } catch (IOException exception) {
-      log.error("error while unzipping base file", exception);
-      throw new RuntimeException(exception);
+        try {
+            this.zipArchive = new ClassPathResource(zipArchivePath).getFile();
+        } catch (IOException exception) {
+            log.error("error while unzipping base file", exception);
+            throw new RuntimeException(exception);
+        }
     }
-  }
 
-  public Stream<Map<String, Object>> getRawData() {
-    try (final ZipArchiveInputStream zip = new ZipArchiveInputStream(new FileInputStream(zipArchive))) {
-      final Map<String, byte[]> zippedFiles = new ConcurrentHashMap<>();
+    public Stream<Map<String, Object>> getRawData() {
+        try (final ZipArchiveInputStream zip = new ZipArchiveInputStream(new FileInputStream(zipArchive))) {
+            final Map<String, byte[]> zippedFiles = new ConcurrentHashMap<>();
 
-      ZipArchiveEntry zipEntry = zip.getNextZipEntry();
-      while (zipEntry != null) {
-        zippedFiles.put(zipEntry.getName(), IOUtils.toByteArray(zip));
-        zipEntry = zip.getNextZipEntry();
-      }
-
-      return zippedFiles.entrySet()
-              .stream()
-              .parallel()
-              .flatMap(entry -> {
-                try {
-                  final InputStream rawJson = new GZIPInputStream(new ByteArrayInputStream(entry.getValue()));
-                  final List<Map<String, Object>> rawEntries = mapper.readValue(rawJson, new TypeReference<List<Map<String,
-                          Object>>>() {
-                  });
-                  return rawEntries.stream();
-                } catch (IOException exception) {
-                  log.error("error while g-unzipping inner file: " + entry.getKey(), exception);
-                  throw new RuntimeException(exception);
+            ZipArchiveEntry zipEntry = zip.getNextZipEntry();
+            while (zipEntry != null) {
+                byte[] value = IOUtils.toByteArray(zip);
+                if (value.length != 0) {
+                    zippedFiles.put(zipEntry.getName(), value);
                 }
-              });
-    } catch (final IOException exception) {
-      log.error("error while unzipping base file", exception);
-      throw new RuntimeException(exception);
-    }
-  }
+                zipEntry = zip.getNextZipEntry();
+            }
 
-  public long getAmountOfArchives() {
-    return this.getRawData().count();
-  }
+            return zippedFiles.entrySet()
+                    .stream()
+                    .parallel()
+                    .flatMap(entry -> {
+                        try {
+                            final InputStream rawJson = new GZIPInputStream(new ByteArrayInputStream(entry.getValue()));
+                            final List<Map<String, Object>> rawEntries = mapper.readValue(rawJson, new TypeReference<List<Map<String,
+                                    Object>>>() {
+                            });
+                            return rawEntries.stream();
+                        } catch (IOException exception) {
+                            log.error("error while g-unzipping inner file: " + entry.getKey(), exception);
+                            throw new RuntimeException(exception);
+                        }
+                    });
+        } catch (final IOException exception) {
+            log.error("error while unzipping base file", exception);
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public long getAmountOfArchives() {
+        return this.getRawData().count();
+    }
 }

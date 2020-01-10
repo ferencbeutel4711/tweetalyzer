@@ -7,7 +7,9 @@ import lombok.*;
 import org.neo4j.ogm.annotation.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static de.fbeutel.tweetalyzer.graph.domain.NodeType.TWEET;
 import static org.neo4j.ogm.annotation.Relationship.UNDIRECTED;
@@ -30,6 +32,10 @@ public class Tweet {
   private String text;
   private String replyTargetId;
   private Set<String> mentionedIds;
+  private List<String> hashTags;
+
+  @Index
+  private String hashTagSearchField;
 
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
@@ -50,6 +56,8 @@ public class Tweet {
             .text(rawStatus.getText())
             .mentionedIds(rawStatus.getMentionedIds())
             .mentionedUsers(new HashSet<>())
+            .hashTags(rawStatus.getHashtags())
+            .hashTagSearchField("," + String.join(",", rawStatus.getHashtags()) + ",")
             .build();
   }
 
@@ -61,6 +69,8 @@ public class Tweet {
             .mentionedIds(rawReply.getMentionedIds())
             .mentionedUsers(new HashSet<>())
             .replyTargetId(rawReply.getReference())
+            .hashTags(rawReply.getHashtags())
+            .hashTagSearchField("," + String.join(",", rawReply.getHashtags()) + ",")
             .build();
   }
 

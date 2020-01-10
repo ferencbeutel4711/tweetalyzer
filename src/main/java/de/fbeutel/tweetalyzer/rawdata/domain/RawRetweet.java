@@ -23,17 +23,11 @@ public class RawRetweet {
   @Indexed
   @JsonProperty("user")
   private final String userId;
-  private final List<String> hashtags;
-  private final List<String> urls;
 
   @JsonProperty("created_at")
   private final Date creationDate;
   @JsonProperty("recorded_at")
   private final Date recordingDate;
-
-  private final List<String> mentions;
-  @JsonProperty("mentioned_ids")
-  private final List<String> mentionedIds;
 
   @Indexed
   @JsonProperty("refers_to")

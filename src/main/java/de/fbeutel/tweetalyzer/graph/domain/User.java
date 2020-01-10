@@ -27,6 +27,7 @@ public class User {
 
   @Index(unique = true)
   private String rawId;
+  @Index
   private String name;
 
   @JsonManagedReference

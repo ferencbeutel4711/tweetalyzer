@@ -10,7 +10,6 @@ import static lombok.AccessLevel.NONE;
 @Builder
 public class JobInformation {
 
-  private final String id;
   private final String jobName;
   private final String readableJobName;
   private final String description;

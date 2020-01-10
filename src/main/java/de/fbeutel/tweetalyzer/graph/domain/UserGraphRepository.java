@@ -10,13 +10,13 @@ public interface UserGraphRepository extends CrudRepository<User, Long> {
 
   Optional<User> findByRawId(final String rawId);
 
-  @Query("MATCH (n)-[r*]->(d) WHERE n.text=~{1} OR d.text=~{1} RETURN n,r,d LIMIT {0}")
+  @Query("MATCH p=(n:Tweet)-[r*..10]-() WHERE n.hashTagSearchField CONTAINS {1} RETURN p LIMIT {0}")
   List<User> findForGraphWithHashtag(Integer limit, final String hashtagSearchCriteria);
 
-  @Query("MATCH (n)-[r*]->(d) WHERE n.name={1} OR d.name={1} RETURN n,r,d LIMIT {0}")
+  @Query("MATCH p=(n:User)-[r*..10]-() WHERE n.name={1} RETURN p LIMIT {0}")
   List<User> findForGraphWithUsername(Integer limit, final String usernameSearchCriteria);
 
-  @Query("MATCH (n)-[r*]->(d) WHERE n.name ={2} OR d.name={2} WITH * WHERE n.text=~{1} OR d.text=~{1} RETURN n,r,d LIMIT {0}")
+  @Query("MATCH p=(n:User)-[r*..10]-(d:Tweet) WHERE n.name={2} AND d.hashTagSearchField CONTAINS {1} RETURN p LIMIT {0}")
   List<User> findForGraph(Integer limit, final String hashtagSearchCriteria, final String usernameSearchCriteria);
 
   @Query("MATCH (n)-[r*]->(d) RETURN n,r,d LIMIT {0}")

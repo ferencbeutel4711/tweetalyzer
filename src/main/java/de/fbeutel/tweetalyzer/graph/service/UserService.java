@@ -50,6 +50,6 @@ public class UserService {
   }
 
   private String hashtagToSearchCriteria(final String hashtag) {
-    return ".*#" + hashtag + ".*";
+    return "," + hashtag + ",";
   }
 }

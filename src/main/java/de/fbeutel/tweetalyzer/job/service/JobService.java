@@ -88,8 +88,11 @@ public class JobService {
   }
 
   private boolean jobInRunningMutexGroup(final Job job) {
-    return runningJobs.entrySet().stream()
-            .anyMatch(jobInfo -> jobInfo.getValue().getMutexGroup().contains(job.getJobName())) || job.getMutexGroup().stream()
-            .anyMatch(jobName -> runningJobs.keySet().contains(jobName));
+      boolean runningJobInJobsMutexGroup = runningJobs.entrySet().stream()
+              .anyMatch(jobInfo -> jobInfo.getValue().getMutexGroup().contains(job.getJobName()));
+      boolean jobInRunningJobsMutexGroup = job.getMutexGroup().stream()
+              .anyMatch(runningJobs::containsKey);
+
+      return runningJobInJobsMutexGroup || jobInRunningJobsMutexGroup;
   }
 }
