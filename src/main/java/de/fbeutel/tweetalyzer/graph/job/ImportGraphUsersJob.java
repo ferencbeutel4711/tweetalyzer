@@ -31,7 +31,7 @@ public class ImportGraphUsersJob extends Job {
 
   private static final String JOB_DESCRIPTION = "This job is importing all Users from the raw data into the graph database";
   private static final List<JobName> MUTEX_GROUP = asList(IMPORT_GRAPH_REPLIES_JOB, IMPORT_GRAPH_RETWEETS_JOB,
-          IMPORT_GRAPH_TWEETS_JOB);
+          IMPORT_GRAPH_TWEETS_JOB, IMPORT_GRAPH_QUOTES_JOB);
 
   private final RawDataService rawDataService;
   private final UserService userService;

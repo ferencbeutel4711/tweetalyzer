@@ -14,4 +14,5 @@ public class GraphStatusResponse {
   private final long mentionsRelCount;
   private final long tweetsRelCount;
   private final long retweetsRelCount;
+  private final long quotesRelCount;
 }

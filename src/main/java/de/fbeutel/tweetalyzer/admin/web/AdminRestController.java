@@ -51,6 +51,7 @@ public class AdminRestController {
             .mentionsRelCount(tweetService.countMentionsRels())
             .tweetsRelCount(userService.countTweetsRels())
             .retweetsRelCount(userService.countReTweetsRels())
+            .quotesRelCount(tweetService.countQuoteRels())
             .build());
   }
 

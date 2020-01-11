@@ -23,7 +23,7 @@ public class ImportGraphRetweetsJob extends Job {
 
   private static final String JOB_DESCRIPTION = "This job is importing all Retweets from the raw data into the graph database";
   private static final List<JobName> MUTEX_GROUP = asList(IMPORT_GRAPH_USERS_JOB, IMPORT_GRAPH_REPLIES_JOB,
-          IMPORT_GRAPH_TWEETS_JOB);
+          IMPORT_GRAPH_TWEETS_JOB, IMPORT_GRAPH_QUOTES_JOB);
 
   private final RawDataService rawDataService;
   private final UserService userService;

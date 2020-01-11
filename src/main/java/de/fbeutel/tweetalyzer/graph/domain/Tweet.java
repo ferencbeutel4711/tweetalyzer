@@ -1,6 +1,7 @@
 package de.fbeutel.tweetalyzer.graph.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import de.fbeutel.tweetalyzer.rawdata.domain.RawQuote;
 import de.fbeutel.tweetalyzer.rawdata.domain.RawReply;
 import de.fbeutel.tweetalyzer.rawdata.domain.RawStatus;
 import lombok.*;
@@ -31,6 +32,7 @@ public class Tweet {
   private String userId;
   private String text;
   private String replyTargetId;
+  private String quoteTargetId;
   private Set<String> mentionedIds;
   private List<String> hashTags;
 
@@ -48,6 +50,12 @@ public class Tweet {
   @EqualsAndHashCode.Exclude
   @Relationship(type = "mentions", direction = UNDIRECTED)
   private Set<User> mentionedUsers;
+
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  @Relationship(type = "quotes", direction = UNDIRECTED)
+  @JsonBackReference
+  private Tweet quoteTarget;
 
   public static Tweet fromRawData(final RawStatus rawStatus) {
     return Tweet.builder()
@@ -71,6 +79,19 @@ public class Tweet {
             .replyTargetId(rawReply.getReference())
             .hashTags(rawReply.getHashtags())
             .hashTagSearchField("," + String.join(",", rawReply.getHashtags()) + ",")
+            .build();
+  }
+
+  public static Tweet fromRawData(final RawQuote rawQuote) {
+    return Tweet.builder()
+            .rawId(rawQuote.getId())
+            .userId(rawQuote.getUserId())
+            .text(rawQuote.getText())
+            .mentionedIds(rawQuote.getMentionedIds())
+            .mentionedUsers(new HashSet<>())
+            .quoteTargetId(rawQuote.getReference())
+            .hashTags(rawQuote.getHashtags())
+            .hashTagSearchField("," + String.join(",", rawQuote.getHashtags()) + ",")
             .build();
   }
 

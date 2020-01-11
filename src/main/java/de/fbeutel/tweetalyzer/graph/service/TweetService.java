@@ -11,41 +11,49 @@ import java.util.Optional;
 
 @Service
 public class TweetService {
-  private final TweetGraphRepository tweetGraphRepository;
+    private final TweetGraphRepository tweetGraphRepository;
 
-  public TweetService(final TweetGraphRepository tweetGraphRepository) {
-    this.tweetGraphRepository = tweetGraphRepository;
-  }
+    public TweetService(final TweetGraphRepository tweetGraphRepository) {
+        this.tweetGraphRepository = tweetGraphRepository;
+    }
 
-  public long countTweetNodes() {
-    return tweetGraphRepository.count();
-  }
+    public long countTweetNodes() {
+        return tweetGraphRepository.count();
+    }
 
-  public long countRepliesToRels() {
-    return tweetGraphRepository.countRepliesToRels();
-  }
+    public long countRepliesToRels() {
+        return tweetGraphRepository.countRepliesToRels();
+    }
 
-  public long countMentionsRels() {
-    return tweetGraphRepository.countMentionsRels();
-  }
+    public long countMentionsRels() {
+        return tweetGraphRepository.countMentionsRels();
+    }
 
-  public Tweet save(final Tweet tweet) {
-    return tweetGraphRepository.save(tweet);
-  }
+    public long countQuoteRels() {
+        return tweetGraphRepository.countQuoteRels();
+    }
 
-  public Optional<Tweet> findByRawId(final String rawId) {
-    return tweetGraphRepository.findByRawId(rawId);
-  }
+    public Tweet save(final Tweet tweet) {
+        return tweetGraphRepository.save(tweet);
+    }
 
-  public Optional<Tweet> findByReplyTargetId(final String replyTargetId) {
-    return tweetGraphRepository.findByReplyTargetId(replyTargetId);
-  }
+    public Optional<Tweet> findByRawId(final String rawId) {
+        return tweetGraphRepository.findByRawId(rawId);
+    }
 
-  public List<Tweet> findAllTweetsByUserId(final String userId) {
-    return tweetGraphRepository.findAllByUserId(userId);
-  }
+    public Optional<Tweet> findByReplyTargetId(final String replyTargetId) {
+        return tweetGraphRepository.findByReplyTargetId(replyTargetId);
+    }
 
-  public List<Tweet> findAllByMentionedIdsContaining(String userId) {
-    return tweetGraphRepository.findAllByMentionedIdsContaining(userId);
-  }
+    public Optional<Tweet> findByQuoteTargetId(final String quoteTargetId) {
+        return tweetGraphRepository.findByQuoteTargetId(quoteTargetId);
+    }
+
+    public List<Tweet> findAllTweetsByUserId(final String userId) {
+        return tweetGraphRepository.findAllByUserId(userId);
+    }
+
+    public List<Tweet> findAllByMentionedIdsContaining(String userId) {
+        return tweetGraphRepository.findAllByMentionedIdsContaining(userId);
+    }
 }

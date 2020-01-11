@@ -8,17 +8,22 @@ import java.util.Optional;
 
 public interface TweetGraphRepository extends CrudRepository<Tweet, Long> {
 
-  List<Tweet> findAllByUserId(final String userId);
+    List<Tweet> findAllByUserId(final String userId);
 
-  Optional<Tweet> findByRawId(final String rawId);
+    Optional<Tweet> findByRawId(final String rawId);
 
-  Optional<Tweet> findByReplyTargetId(final String replyTargetId);
+    Optional<Tweet> findByReplyTargetId(final String replyTargetId);
 
-  List<Tweet> findAllByMentionedIdsContaining(String userId);
+    Optional<Tweet> findByQuoteTargetId(final String quoteTargetId);
 
-  @Query("MATCH p=()-[r:replies_to]->() RETURN count(p)")
-  Long countRepliesToRels();
+    List<Tweet> findAllByMentionedIdsContaining(String userId);
 
-  @Query("MATCH p=()-[r:mentions]->() RETURN count(p)")
-  Long countMentionsRels();
+    @Query("MATCH p=()-[r:replies_to]->() RETURN count(p)")
+    Long countRepliesToRels();
+
+    @Query("MATCH p=()-[r:mentions]->() RETURN count(p)")
+    Long countMentionsRels();
+
+    @Query("MATCH p=()-[r:quotes]->() RETURN count(p)")
+    Long countQuoteRels();
 }

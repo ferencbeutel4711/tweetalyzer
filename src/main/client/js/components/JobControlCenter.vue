@@ -17,7 +17,7 @@ export default {
     components: {JobControl, JobInfo},
     data() {
         return {
-            jobNames: ['IMPORT_GRAPH_USERS_JOB', 'IMPORT_GRAPH_TWEETS_JOB', 'IMPORT_GRAPH_RETWEETS_JOB', 'IMPORT_GRAPH_REPLIES_JOB', 'RAW_DATA_IMPORT_JOB'],
+            jobNames: ['IMPORT_GRAPH_USERS_JOB', 'IMPORT_GRAPH_TWEETS_JOB', 'IMPORT_GRAPH_RETWEETS_JOB', 'IMPORT_GRAPH_REPLIES_JOB', 'RAW_DATA_IMPORT_JOB', 'IMPORT_GRAPH_USERS_JOB'],
             jobs: []
         }
     },

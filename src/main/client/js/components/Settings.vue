@@ -103,7 +103,13 @@ export default {
                     key: 'graphRetweetsRelCount',
                     id: Date.now(),
                     description: 'This value shows the amount of retweets relationships in the graph database.',
-                    value: `Graph Retweet Nodes: calculating`
+                    value: `Graph Retweet Rels: calculating`
+                },
+                {
+                    key: 'graphQuotesRelCount',
+                    id: Date.now(),
+                    description: 'This value shows the amount of quotes relationships in the graph database.',
+                    value: `Graph Quote Rels: calculating`
                 }
             ]
         }
@@ -194,7 +200,13 @@ export default {
                             key: 'graphRetweetsRelCount',
                             id: Date.now(),
                             description: 'This value shows the amount of retweets relationships in the graph database.',
-                            value: `Graph Retweet Nodes: ${data.retweetsRelCount}`
+                            value: `Graph Retweet Rels: ${data.retweetsRelCount}`
+                        },
+                        {
+                            key: 'graphQuotesRelCount',
+                            id: Date.now(),
+                            description: 'This value shows the amount of quotes relationships in the graph database.',
+                            value: `Graph Quote Rels: ${data.quotesRelCount}`
                         }
                     ]
                 });

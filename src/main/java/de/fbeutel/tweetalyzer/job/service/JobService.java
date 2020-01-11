@@ -1,10 +1,7 @@
 package de.fbeutel.tweetalyzer.job.service;
 
 import de.fbeutel.tweetalyzer.common.exception.NotFoundException;
-import de.fbeutel.tweetalyzer.graph.job.ImportGraphRepliesJob;
-import de.fbeutel.tweetalyzer.graph.job.ImportGraphRetweetsJob;
-import de.fbeutel.tweetalyzer.graph.job.ImportGraphTweetsJob;
-import de.fbeutel.tweetalyzer.graph.job.ImportGraphUsersJob;
+import de.fbeutel.tweetalyzer.graph.job.*;
 import de.fbeutel.tweetalyzer.job.exception.JobException;
 import de.fbeutel.tweetalyzer.job.exception.JobInRunningMutexGroupException;
 import de.fbeutel.tweetalyzer.job.exception.JobRunningException;
@@ -29,13 +26,14 @@ public class JobService {
 
   public JobService(final ImportGraphRepliesJob importGraphRepliesJob, final ImportGraphRetweetsJob importGraphRetweetsJob,
                     final ImportGraphTweetsJob importGraphTweetsJob, final ImportGraphUsersJob importGraphUsersJob,
-                    final RawDataImportJob rawDataImportJob) {
+                    final ImportGraphQuotesJob importGraphQuotesJob, final RawDataImportJob rawDataImportJob) {
 
     this.jobDefinitions = new ConcurrentHashMap<>();
     this.jobDefinitions.put(importGraphRepliesJob.getJobName(), importGraphRepliesJob);
     this.jobDefinitions.put(importGraphRetweetsJob.getJobName(), importGraphRetweetsJob);
     this.jobDefinitions.put(importGraphTweetsJob.getJobName(), importGraphTweetsJob);
     this.jobDefinitions.put(importGraphUsersJob.getJobName(), importGraphUsersJob);
+    this.jobDefinitions.put(importGraphQuotesJob.getJobName(), importGraphQuotesJob);
     this.jobDefinitions.put(rawDataImportJob.getJobName(), rawDataImportJob);
   }
 
