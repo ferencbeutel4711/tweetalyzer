@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static de.fbeutel.tweetalyzer.job.domain.JobName.*;
@@ -23,10 +24,13 @@ public class RawDataImportJob extends Job {
 
   private static final String JOB_DESCRIPTION = "This Job imports the raw data provided into the mongoDB";
   private static final List<JobName> MUTEX_GROUP = new ArrayList<>();
+  private static final Integer N = 1;
 
   private final RawDataImportService rawDataImportService;
   private final RawDataService rawDataService;
   private final ObjectMapper mapper;
+
+  private final AtomicInteger counter = new AtomicInteger(0);
 
   public RawDataImportJob(final RawDataImportService rawDataImportService, final RawDataService rawDataService,
                           final ObjectMapper mapper) {
@@ -42,8 +46,13 @@ public class RawDataImportJob extends Job {
     this.mapAndPersist(rawDataImportService.getRawData());
   }
 
+  private boolean isNthElement() {
+    return counter.getAndIncrement() % N == 0;
+  }
+
   private void mapAndPersist(final Stream<Map<String, Object>> entries) {
-    entries.forEach(rawEntry -> {
+    entries.filter(entry -> this.isNthElement())
+            .forEach(rawEntry -> {
       final Object rawType = rawEntry.get("type");
       if (rawType != null) {
         final String type = rawType.toString();
