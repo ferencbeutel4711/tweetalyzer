@@ -1,0 +1,29 @@
+version: '3'
+services:
+  neo4j:
+    image: neo4j:3.5.12
+    environment:
+      - NEO4J_AUTH=neo4j/tweet
+      - NEO4J_dbms_connector_bolt_tls__level=OPTIONAL
+    restart: always
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    command: neo4j
+  mongodb:
+    image: mongo:4.2
+    restart: always
+    ports:
+      - "27017:27017"
+    command: mongod
+  tweetalyzer:
+    build: .
+    ports:
+      - "5000:5000"
+    depends_on:
+      - neo4j
+      - mongodb
+    restart: on-failure
+    expose:
+      - 8080
+    command: ["/bin/sh", "-c", "exec java -jar /opt/tweetalyzer-1.jar"]
