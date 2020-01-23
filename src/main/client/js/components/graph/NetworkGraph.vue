@@ -16,7 +16,9 @@
                     :cx="node.x"
                     :cy="node.y"
                     :r="node.size"
-                    :fill="colorForNode(node)"/>
+                    :fill="colorForNode(node)"
+                    stroke="black"
+                    stroke-width="1"/>
             <g :id="node.id" v-for="node in nodes" :visibility="isVisible(node)">
                 <rect :x="node.x > width / 2 ? node.x - (labelWidth * zoomFactor + 20) : node.x + 20"
                       :y="node.y < height / 2 ? node.y - 10 : node.y - (labelHeight * zoomFactor + 10)"
@@ -138,6 +140,9 @@ export default {
         }
     },
     mounted() {
+        if(this.debugEnabled) {
+            console.log(`drawing ${this.initialNodes.length} nodes with ${this.initialLinks.length} relationships`);
+        }
         this.$store.commit('sideBar/changeActiveModule', 'Graph');
 
         this.graphSimulation = d3.forceSimulation(this.nodes)
@@ -205,7 +210,6 @@ export default {
             const padding = 20;
             const containingW = this.viewBox.w + this.viewBox.minX;
             const containingH = this.viewBox.h + this.viewBox.minY;
-            console.log(`${containingW} : ${containingH}`);
             this.nodes.forEach(node => {
                 if (node.x + node.size + padding > containingW) {
                     node.x = containingW - node.size - padding;
@@ -240,13 +244,15 @@ export default {
                 && this.hoveredNode.id !== link.target.id;
             switch (link.type) {
                 case "TWEETS":
-                    return muteLinkColor ? "rgba(0,0,255,0.1)" : "rgb(0,0,255)";
+                    return muteLinkColor ? "rgba(32,191,85,0.1)" : "rgb(32,191,85)";
                 case "RETWEETS":
-                    return muteLinkColor ? "rgba(0,255,0,0.1)" : "rgb(0,255,0)";
+                    return muteLinkColor ? "rgba(11,79,108,0.1)" : "rgb(11,79,108)";
                 case "MENTIONS":
-                    return muteLinkColor ? "rgba(255,0,0,0.1)" : "rgb(255,0,0)";
+                    return muteLinkColor ? "rgba(70,204,240,0.1)" : "rgb(70,204,240)";
                 case "REPLIES_TO":
-                    return muteLinkColor ? "rgba(255,255,0,0.1)" : "rgb(255,255,0)";
+                    return muteLinkColor ? "rgba(225,153,123,0.1)" : "rgb(225,153,123)";
+                case "QUOTES":
+                    return muteLinkColor ? "rgba(219,213,110,0.1)" : "rgb(219,213,110)";
                 default:
                     return muteLinkColor ? "rgba(0,0,0,0.1)" : "rgb(0,0,0)";
             }

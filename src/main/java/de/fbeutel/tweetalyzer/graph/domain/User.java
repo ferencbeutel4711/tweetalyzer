@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static de.fbeutel.tweetalyzer.graph.domain.NodeType.USER;
+import static org.neo4j.ogm.annotation.Relationship.OUTGOING;
 import static org.neo4j.ogm.annotation.Relationship.UNDIRECTED;
 
 @Data
@@ -31,11 +32,11 @@ public class User {
   private String name;
 
   @JsonManagedReference
-  @Relationship(type = "tweets", direction = UNDIRECTED)
+  @Relationship(type = "tweets", direction = OUTGOING)
   private Set<Tweet> createdTweets;
 
   @JsonManagedReference
-  @Relationship(type = "reTweets", direction = UNDIRECTED)
+  @Relationship(type = "reTweets", direction = OUTGOING)
   private Set<Tweet> reTweets;
 
   public static User fromRawData(final RawUser rawUser) {

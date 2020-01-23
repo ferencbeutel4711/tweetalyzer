@@ -1,11 +1,7 @@
 package de.fbeutel.tweetalyzer.graph.service;
 
+import static de.fbeutel.tweetalyzer.graph.domain.RelationshipType.*;
 import static java.util.Collections.singletonList;
-
-import static de.fbeutel.tweetalyzer.graph.domain.RelationshipType.MENTIONS;
-import static de.fbeutel.tweetalyzer.graph.domain.RelationshipType.REPLIES_TO;
-import static de.fbeutel.tweetalyzer.graph.domain.RelationshipType.RETWEETS;
-import static de.fbeutel.tweetalyzer.graph.domain.RelationshipType.TWEETS;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -26,177 +22,204 @@ import de.fbeutel.tweetalyzer.graph.domain.User;
 @Service
 public class GraphService {
 
-  private static final Integer MAX_DEPTH = 10;
+    private static final Integer MAX_DEPTH = 20;
 
-  private final UserService userService;
+    private final UserService userService;
 
-  public GraphService(final UserService userService) {
-    this.userService = userService;
-  }
-
-  public PublicNetwork calculateNetwork(final int limit, final String hashtag, final String username) {
-    final List<User> users = userService.findForGraph(limit, hashtag, username);
-
-    return PublicNetwork.builder()
-            .nodes(nodesForUsers(users, 0))
-            .relationships(tweetsRelationshipsForUsers(users, 0))
-            .build();
-  }
-
-  private PublicRelationships tweetsRelationshipsForUsers(final Collection<User> users, final int depth) {
-    final int newDepth = depth + 1;
-
-    if (depth > MAX_DEPTH || users == null) {
-      return PublicRelationships.empty();
+    public GraphService(final UserService userService) {
+        this.userService = userService;
     }
 
-    final Set<PublicRelationship> tweetsResults = new HashSet<>();
-    final Set<PublicRelationship> reTweetsResults = new HashSet<>();
-    final Set<PublicRelationship> mentionsResults = new HashSet<>();
-    final Set<PublicRelationship> repliesResults = new HashSet<>();
-    users.forEach(user -> {
-      if (user.getCreatedTweets() != null) {
-        user.getCreatedTweets()
-                .forEach(tweet -> tweetsResults.add(PublicRelationship.builder()
-                        .type(TWEETS)
-                        .source(user.getId().toString())
-                        .target(tweet.getId().toString())
+    public PublicNetwork calculateNetwork(final int limit, final String hashtag, final String username) {
+        final List<User> users = userService.findForGraph(limit, hashtag, username);
+
+        return PublicNetwork.builder()
+                .nodes(nodesForUsers(users, 0))
+                .relationships(relationshipsForUsers(users, 0))
+                .build();
+    }
+
+    private PublicRelationships relationshipsForUsers(final Collection<User> users, final int depth) {
+        final int newDepth = depth + 1;
+
+        if (depth > MAX_DEPTH || users == null) {
+            return PublicRelationships.empty();
+        }
+
+        final Set<PublicRelationship> tweetsResults = new HashSet<>();
+        final Set<PublicRelationship> reTweetsResults = new HashSet<>();
+        final Set<PublicRelationship> mentionsResults = new HashSet<>();
+        final Set<PublicRelationship> repliesResults = new HashSet<>();
+        final Set<PublicRelationship> quotesResults = new HashSet<>();
+        users.forEach(user -> {
+            if (user.getCreatedTweets() != null) {
+                user.getCreatedTweets()
+                        .forEach(tweet -> tweetsResults.add(PublicRelationship.builder()
+                                .type(TWEETS)
+                                .source(user.getId().toString())
+                                .target(tweet.getId().toString())
+                                .build()));
+
+            }
+
+            if (user.getReTweets() != null) {
+                user.getReTweets()
+                        .forEach(tweet -> reTweetsResults.add(PublicRelationship.builder()
+                                .type(RETWEETS)
+                                .source(user.getId().toString())
+                                .target(tweet.getId().toString())
+                                .build()));
+            }
+
+            final PublicRelationships relsForCreatedTweets = relationshipsForTweets(user.getCreatedTweets(), newDepth);
+            tweetsResults.addAll(relsForCreatedTweets.getTweets());
+            reTweetsResults.addAll(relsForCreatedTweets.getReTweets());
+            mentionsResults.addAll(relsForCreatedTweets.getMentions());
+            repliesResults.addAll(relsForCreatedTweets.getReplies());
+            quotesResults.addAll(relsForCreatedTweets.getQuotes());
+
+            final PublicRelationships relsForReTweets = relationshipsForTweets(user.getReTweets(), newDepth);
+            tweetsResults.addAll(relsForReTweets.getTweets());
+            reTweetsResults.addAll(relsForReTweets.getReTweets());
+            mentionsResults.addAll(relsForReTweets.getMentions());
+            repliesResults.addAll(relsForReTweets.getReplies());
+            quotesResults.addAll(relsForReTweets.getQuotes());
+        });
+
+        return PublicRelationships.builder()
+                .tweets(tweetsResults)
+                .reTweets(reTweetsResults)
+                .mentions(mentionsResults)
+                .replies(repliesResults)
+                .quotes(quotesResults)
+                .build();
+    }
+
+    private PublicRelationships relationshipsForTweets(final Collection<Tweet> tweets, final int depth) {
+        final int newDepth = depth + 1;
+
+        if (depth > MAX_DEPTH || tweets == null) {
+            return PublicRelationships.empty();
+        }
+
+        final Set<PublicRelationship> tweetsResults = new HashSet<>();
+        final Set<PublicRelationship> reTweetsResults = new HashSet<>();
+        final Set<PublicRelationship> mentionsResults = new HashSet<>();
+        final Set<PublicRelationship> repliesResults = new HashSet<>();
+        final Set<PublicRelationship> quotesResults = new HashSet<>();
+        tweets.forEach(tweet -> {
+            if (tweet.getTarget() != null) {
+                repliesResults.add(PublicRelationship.builder()
+                        .type(REPLIES_TO)
+                        .source(tweet.getId().toString())
+                        .target(tweet.getTarget().getId().toString())
+                        .build());
+
+                final PublicRelationships relsForTarget = relationshipsForTweets(singletonList(tweet.getTarget()), newDepth);
+                tweetsResults.addAll(relsForTarget.getTweets());
+                reTweetsResults.addAll(relsForTarget.getReTweets());
+                mentionsResults.addAll(relsForTarget.getMentions());
+                repliesResults.addAll(relsForTarget.getReplies());
+            }
+            if (tweet.getQuoteTarget() != null) {
+                quotesResults.add(PublicRelationship.builder()
+                        .type(QUOTES)
+                        .source(tweet.getId().toString())
+                        .target(tweet.getQuoteTarget().getId().toString())
+                        .build());
+
+                final PublicRelationships relsForTarget = relationshipsForTweets(singletonList(tweet.getQuoteTarget()), newDepth);
+                tweetsResults.addAll(relsForTarget.getTweets());
+                reTweetsResults.addAll(relsForTarget.getReTweets());
+                mentionsResults.addAll(relsForTarget.getMentions());
+                repliesResults.addAll(relsForTarget.getReplies());
+                quotesResults.addAll(relsForTarget.getQuotes());
+            }
+
+            if (tweet.getMentionedUsers() != null) {
+                tweet.getMentionedUsers().forEach(mentionedUser -> mentionsResults.add(PublicRelationship.builder()
+                        .type(MENTIONS)
+                        .source(tweet.getId().toString())
+                        .target(mentionedUser.getId().toString())
                         .build()));
+            }
 
-      }
+            final PublicRelationships relsForMentions = relationshipsForUsers(tweet.getMentionedUsers(), newDepth);
+            tweetsResults.addAll(relsForMentions.getTweets());
+            reTweetsResults.addAll(relsForMentions.getReTweets());
+            mentionsResults.addAll(relsForMentions.getMentions());
+            repliesResults.addAll(relsForMentions.getReplies());
+            quotesResults.addAll(relsForMentions.getQuotes());
+        });
 
-      if (user.getReTweets() != null) {
-        user.getReTweets()
-                .forEach(tweet -> reTweetsResults.add(PublicRelationship.builder()
-                        .type(RETWEETS)
-                        .source(user.getId().toString())
-                        .target(tweet.getId().toString())
-                        .build()));
-      }
-
-      final PublicRelationships relsForCreatedTweets = tweetsRelationshipsForTweets(user.getCreatedTweets(), newDepth);
-      tweetsResults.addAll(relsForCreatedTweets.getTweets());
-      reTweetsResults.addAll(relsForCreatedTweets.getReTweets());
-      mentionsResults.addAll(relsForCreatedTweets.getMentions());
-      repliesResults.addAll(relsForCreatedTweets.getReplies());
-
-      final PublicRelationships relsForReTweets = tweetsRelationshipsForTweets(user.getReTweets(), newDepth);
-      tweetsResults.addAll(relsForReTweets.getTweets());
-      reTweetsResults.addAll(relsForReTweets.getReTweets());
-      mentionsResults.addAll(relsForReTweets.getMentions());
-      repliesResults.addAll(relsForReTweets.getReplies());
-    });
-
-    return PublicRelationships.builder()
-            .tweets(tweetsResults)
-            .reTweets(reTweetsResults)
-            .mentions(mentionsResults)
-            .replies(repliesResults)
-            .build();
-  }
-
-  private PublicRelationships tweetsRelationshipsForTweets(final Collection<Tweet> tweets, final int depth) {
-    final int newDepth = depth + 1;
-
-    if (depth > MAX_DEPTH || tweets == null) {
-      return PublicRelationships.empty();
+        return PublicRelationships.builder()
+                .tweets(tweetsResults)
+                .reTweets(reTweetsResults)
+                .mentions(mentionsResults)
+                .replies(repliesResults)
+                .quotes(quotesResults)
+                .build();
     }
 
-    final Set<PublicRelationship> tweetsResults = new HashSet<>();
-    final Set<PublicRelationship> reTweetsResults = new HashSet<>();
-    final Set<PublicRelationship> mentionsResults = new HashSet<>();
-    final Set<PublicRelationship> repliesResults = new HashSet<>();
-    tweets.forEach(tweet -> {
-      if (tweet.getTarget() != null) {
-        repliesResults.add(PublicRelationship.builder()
-                .type(REPLIES_TO)
-                .source(tweet.getId().toString())
-                .target(tweet.getTarget().getId().toString())
-                .build());
+    private PublicNodes nodesForTweets(final Collection<Tweet> tweets, final int depth) {
+        final int newDepth = depth + 1;
+        if (depth > MAX_DEPTH || tweets == null) {
+            return PublicNodes.empty();
+        }
 
-        final PublicRelationships relsForTarget = tweetsRelationshipsForTweets(singletonList(tweet.getTarget()), newDepth);
-        tweetsResults.addAll(relsForTarget.getTweets());
-        reTweetsResults.addAll(relsForTarget.getReTweets());
-        mentionsResults.addAll(relsForTarget.getMentions());
-        repliesResults.addAll(relsForTarget.getReplies());
-      }
+        final Set<PublicUser> resultUsers = new HashSet<>();
+        final Set<PublicTweet> resultTweets = new HashSet<>();
+        tweets.forEach(tweet -> {
+            resultTweets.add(tweet.toPublicTweet());
 
-      if (tweet.getMentionedUsers() != null) {
-        tweet.getMentionedUsers().forEach(mentionedUser -> mentionsResults.add(PublicRelationship.builder()
-                .type(MENTIONS)
-                .source(tweet.getId().toString())
-                .target(mentionedUser.getId().toString())
-                .build()));
-      }
+            if (tweet.getTarget() != null) {
+                final PublicNodes targetNodes = nodesForTweets(singletonList(tweet.getTarget()), newDepth);
+                resultUsers.addAll(targetNodes.getUsers());
+                resultTweets.addAll(targetNodes.getTweets());
+            }
 
-      final PublicRelationships relsForMentions = tweetsRelationshipsForUsers(tweet.getMentionedUsers(), newDepth);
-      tweetsResults.addAll(relsForMentions.getTweets());
-      reTweetsResults.addAll(relsForMentions.getReTweets());
-      mentionsResults.addAll(relsForMentions.getMentions());
-      repliesResults.addAll(relsForMentions.getReplies());
-    });
+            if (tweet.getQuoteTarget() != null) {
+                final PublicNodes targetNodes = nodesForTweets(singletonList(tweet.getQuoteTarget()), newDepth);
+                resultUsers.addAll(targetNodes.getUsers());
+                resultTweets.addAll(targetNodes.getTweets());
+            }
 
-    return PublicRelationships.builder()
-            .tweets(tweetsResults)
-            .reTweets(reTweetsResults)
-            .mentions(mentionsResults)
-            .replies(repliesResults)
-            .build();
-  }
+            final PublicNodes nodesOfMentions = nodesForUsers(tweet.getMentionedUsers(), newDepth);
+            resultUsers.addAll(nodesOfMentions.getUsers());
+            resultTweets.addAll(nodesOfMentions.getTweets());
+        });
 
-  private PublicNodes nodesForTweets(final Collection<Tweet> tweets, final int depth) {
-    final int newDepth = depth + 1;
-    if (depth > MAX_DEPTH || tweets == null) {
-      return PublicNodes.empty();
+        return PublicNodes.builder()
+                .users(resultUsers)
+                .tweets(resultTweets)
+                .build();
     }
 
-    final Set<PublicUser> resultUsers = new HashSet<>();
-    final Set<PublicTweet> resultTweets = new HashSet<>();
-    tweets.forEach(tweet -> {
-      resultTweets.add(tweet.toPublicTweet());
+    private PublicNodes nodesForUsers(final Collection<User> users, final int depth) {
+        final int newDepth = depth + 1;
 
-      if (tweet.getTarget() != null) {
-        final PublicNodes targetNodes = nodesForTweets(singletonList(tweet.getTarget()), newDepth);
-        resultUsers.addAll(targetNodes.getUsers());
-        resultTweets.addAll(targetNodes.getTweets());
-      }
+        if (depth > MAX_DEPTH || users == null) {
+            return PublicNodes.empty();
+        }
 
-      final PublicNodes nodesOfMentions = nodesForUsers(tweet.getMentionedUsers(), newDepth);
-      resultUsers.addAll(nodesOfMentions.getUsers());
-      resultTweets.addAll(nodesOfMentions.getTweets());
-    });
+        final Set<PublicUser> resultUsers = new HashSet<>();
+        final Set<PublicTweet> resultTweets = new HashSet<>();
+        users.forEach(user -> {
+            final PublicUser currentPublicUser = user.toPublicUser();
+            resultUsers.add(currentPublicUser);
 
-    return PublicNodes.builder()
-            .users(resultUsers)
-            .tweets(resultTweets)
-            .build();
-  }
+            final PublicNodes nodesOfCreatedTweets = nodesForTweets(user.getCreatedTweets(), newDepth);
+            resultUsers.addAll(nodesOfCreatedTweets.getUsers());
+            resultTweets.addAll(nodesOfCreatedTweets.getTweets());
 
-  private PublicNodes nodesForUsers(final Collection<User> users, final int depth) {
-    final int newDepth = depth + 1;
+            final PublicNodes nodesOfReTweets = nodesForTweets(user.getReTweets(), newDepth);
+            resultUsers.addAll(nodesOfReTweets.getUsers());
+            resultTweets.addAll(nodesOfReTweets.getTweets());
+        });
 
-    if (depth > MAX_DEPTH || users == null) {
-      return PublicNodes.empty();
+        return PublicNodes.builder()
+                .users(resultUsers)
+                .tweets(resultTweets)
+                .build();
     }
-
-    final Set<PublicUser> resultUsers = new HashSet<>();
-    final Set<PublicTweet> resultTweets = new HashSet<>();
-    users.forEach(user -> {
-      final PublicUser currentPublicUser = user.toPublicUser();
-      resultUsers.add(currentPublicUser);
-
-      final PublicNodes nodesOfCreatedTweets = nodesForTweets(user.getCreatedTweets(), newDepth);
-      resultUsers.addAll(nodesOfCreatedTweets.getUsers());
-      resultTweets.addAll(nodesOfCreatedTweets.getTweets());
-
-      final PublicNodes nodesOfReTweets = nodesForTweets(user.getReTweets(), newDepth);
-      resultUsers.addAll(nodesOfReTweets.getUsers());
-      resultTweets.addAll(nodesOfReTweets.getTweets());
-    });
-
-    return PublicNodes.builder()
-            .users(resultUsers)
-            .tweets(resultTweets)
-            .build();
-  }
 }

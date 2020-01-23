@@ -19,7 +19,7 @@ public interface UserGraphRepository extends CrudRepository<User, Long> {
   @Query("MATCH p=(n:User)-[r*..10]-(d:Tweet) WHERE n.name={2} AND d.hashTagSearchField CONTAINS {1} RETURN p LIMIT {0}")
   List<User> findForGraph(Integer limit, final String hashtagSearchCriteria, final String usernameSearchCriteria);
 
-  @Query("MATCH (n)-[r*]->(d) RETURN n,r,d LIMIT {0}")
+  @Query("MATCH p=()-[r*..10]-() RETURN p LIMIT {0}")
   List<User> findForGraph(Integer limit);
 
   @Query("MATCH p=()-[r:tweets]->() RETURN count(p)")

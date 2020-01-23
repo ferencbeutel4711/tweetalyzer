@@ -14,6 +14,7 @@ public class PublicRelationships {
   private final Set<PublicRelationship> reTweets;
   private final Set<PublicRelationship> mentions;
   private final Set<PublicRelationship> replies;
+  private final Set<PublicRelationship> quotes;
 
   public static PublicRelationships empty() {
     return PublicRelationships.builder()
@@ -21,6 +22,7 @@ public class PublicRelationships {
             .reTweets(new HashSet<>())
             .mentions(new HashSet<>())
             .replies(new HashSet<>())
+            .quotes(new HashSet<>())
             .build();
   }
 }

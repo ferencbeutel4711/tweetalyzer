@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static de.fbeutel.tweetalyzer.graph.domain.NodeType.TWEET;
+import static org.neo4j.ogm.annotation.Relationship.OUTGOING;
 import static org.neo4j.ogm.annotation.Relationship.UNDIRECTED;
 
 @Data
@@ -31,7 +32,9 @@ public class Tweet {
   @Index
   private String userId;
   private String text;
+  @Index
   private String replyTargetId;
+  @Index
   private String quoteTargetId;
   private Set<String> mentionedIds;
   private List<String> hashTags;
@@ -41,19 +44,19 @@ public class Tweet {
 
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
-  @Relationship(type = "replies_to", direction = UNDIRECTED)
+  @Relationship(type = "replies_to", direction = OUTGOING)
   @JsonBackReference
   private Tweet target;
 
   @JsonBackReference
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
-  @Relationship(type = "mentions", direction = UNDIRECTED)
+  @Relationship(type = "mentions", direction = OUTGOING)
   private Set<User> mentionedUsers;
 
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
-  @Relationship(type = "quotes", direction = UNDIRECTED)
+  @Relationship(type = "quotes", direction = OUTGOING)
   @JsonBackReference
   private Tweet quoteTarget;
 
