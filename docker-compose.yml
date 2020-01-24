@@ -19,11 +19,9 @@ services:
   tweetalyzer:
     build: .
     ports:
-      - "5000:5000"
+      - "8080:8080"
     depends_on:
       - neo4j-host
       - mongodb-host
     restart: on-failure
-    expose:
-      - 8080
     command: ["/bin/sh", "-c", "exec java -Dspring.profiles.active=docker -jar /opt/tweetalyzer-1.jar"]
