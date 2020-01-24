@@ -1,20 +1,20 @@
 # tweetalyzer
+The setup is tested under Ubuntu 18.04. Problems concerning the routing between the different docker containers over the host machine can arise under Windows or OSX. Using docker.host.internal as the docker host's hostname may help.
 
 ## Installation
 
-* Install MongoDB
-* Install Neo4J
-* Install NodeJS
 * Install OpenJDK 11
+* Install gradle
+* Install NodeJS
 * Install docker
-* Provide dataset to src/main/resources/data/german-tweet-sample-2019-04.zip
+* Move dataset to src/main/resources/data/german-tweet-sample-2019-04.zip
 
 ## Build project
 
 ```
-./gradlew build
-./npm install
-./npm build
+gradle clean assemble
+npm install
+npm run build
 ```
 
 ## Run
@@ -31,7 +31,7 @@ docker-compose up
 * Start the application
 
 ```
-./gradlew bootRun
+gradle bootRun
 ```
 
 ## Accessing the frontend
