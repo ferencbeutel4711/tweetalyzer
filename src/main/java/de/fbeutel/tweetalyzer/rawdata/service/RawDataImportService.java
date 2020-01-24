@@ -14,6 +14,7 @@ import java.io.*;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
@@ -21,22 +22,16 @@ import java.util.zip.GZIPInputStream;
 @Service
 public class RawDataImportService {
 
-    private final File zipArchive;
+    private final ClassPathResource zipArchive;
     private final ObjectMapper mapper;
 
     public RawDataImportService(@Value("${zip-archive.path}") final String zipArchivePath, ObjectMapper mapper) {
         this.mapper = mapper;
-
-        try {
-            this.zipArchive = new ClassPathResource(zipArchivePath).getFile();
-        } catch (IOException exception) {
-            log.error("error while unzipping base file", exception);
-            throw new RuntimeException(exception);
-        }
+        this.zipArchive = new ClassPathResource(zipArchivePath);
     }
 
     public Stream<Map<String, Object>> getRawData() {
-        try (final ZipArchiveInputStream zip = new ZipArchiveInputStream(new FileInputStream(zipArchive))) {
+        try (final ZipArchiveInputStream zip = new ZipArchiveInputStream(zipArchive.getInputStream())) {
             final Map<String, byte[]> zippedFiles = new ConcurrentHashMap<>();
 
             ZipArchiveEntry zipEntry = zip.getNextZipEntry();

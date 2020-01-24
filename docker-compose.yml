@@ -1,6 +1,6 @@
 version: '3'
 services:
-  neo4j:
+  neo4j-host:
     image: neo4j:3.5.12
     environment:
       - NEO4J_AUTH=neo4j/tweet
@@ -10,7 +10,7 @@ services:
       - "7474:7474"
       - "7687:7687"
     command: neo4j
-  mongodb:
+  mongodb-host:
     image: mongo:4.2
     restart: always
     ports:
@@ -21,9 +21,9 @@ services:
     ports:
       - "5000:5000"
     depends_on:
-      - neo4j
-      - mongodb
+      - neo4j-host
+      - mongodb-host
     restart: on-failure
     expose:
       - 8080
-    command: ["/bin/sh", "-c", "exec java -jar /opt/tweetalyzer-1.jar"]
+    command: ["/bin/sh", "-c", "exec java -Dspring.profiles.active=docker -jar /opt/tweetalyzer-1.jar"]
